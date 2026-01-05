@@ -1,0 +1,70 @@
+version: '3.8'
+
+services: 
+  # ============================================
+  # BACKEND SERVICE
+  # ============================================
+  backend:
+    build:  ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/urlshortener
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production-min-32-chars
+      - JWT_EXPIRES_IN=7d
+      - PORT=3001
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      postgres:
+        condition:  service_healthy
+      redis:
+        condition: service_started
+    volumes: 
+      - ./backend/src:/app/src
+    networks:
+      - url-shortener-network
+
+  # ============================================
+  # POSTGRESQL DATABASE
+  # ============================================
+  postgres:
+    image:  postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=urlshortener
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout:  5s
+      retries: 5
+    networks:
+      - url-shortener-network
+
+  # ============================================
+  # REDIS CACHE
+  # ============================================
+  redis: 
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - url-shortener-network
+
+volumes: 
+  postgres_data:
+  redis_data: 
+
+networks:
+  url-shortener-network:
+    driver:  bridge
