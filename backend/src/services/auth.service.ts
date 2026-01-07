@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 import { env } from '../config/env';
 import { userRepository } from '../repositories/user.repository';
 import { User, UserPublic, CreateUserDto, LoginDto, JwtPayload } from '../types';
@@ -84,9 +84,9 @@ export class AuthService {
       email: user. email,
     };
 
-    return jwt.sign(payload, env.JWT_SECRET as string, {
+    return jwt.sign(payload, env.JWT_SECRET as Secret, {
       expiresIn: env.JWT_EXPIRES_IN,
-    });
+    } as SignOptions);
   }
 
   private toPublicUser(user: User): UserPublic {
