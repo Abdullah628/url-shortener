@@ -10,7 +10,7 @@ export class AuthController {
   ): Promise<void> {
     const { email, password } = req.body;
 
-    const result = await authService. register({ email, password });
+    const result = await authService.register({ email, password });
 
     // Set HTTP-only cookie
     this.setTokenCookie(res, result.token);

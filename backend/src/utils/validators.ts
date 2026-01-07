@@ -20,7 +20,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email:  z
+  email: z
     .string()
     .email('Invalid email format')
     .toLowerCase()
@@ -31,21 +31,27 @@ export const loginSchema = z.object({
 });
 
 // URL VALIDATORS
-export const createUrlSchema = z. object({
+export const createUrlSchema = z.object({
   originalUrl: z
     .string()
-    .url('Invalid URL format')
     .min(10, 'URL is too short')
     .max(2048, 'URL must be less than 2048 characters')
     .refine(
-      (url) => url.startsWith('http://') || url.startsWith('https://'),
-      'URL must start with http:// or https://'
+      (url) => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+          return false;
+        }
+      },
+      'Invalid URL format.  URL must start with http:// or https://'
     ),
 });
 
 // PAGINATION VALIDATORS
 export const paginationSchema = z.object({
-  page:  z
+  page: z
     .string()
     .optional()
     .transform((val) => (val ?  parseInt(val, 10) : 1))
@@ -57,8 +63,24 @@ export const paginationSchema = z.object({
     .refine((val) => val >= 1 && val <= 100, 'Limit must be between 1 and 100'),
 });
 
+// SHORT CODE VALIDATOR
+export const shortCodeSchema = z.object({
+  shortCode: z
+    . string()
+    .min(6, 'Short code must be at least 6 characters')
+    .max(8, 'Short code must be at most 8 characters')
+    .regex(/^[a-zA-Z0-9]+$/, 'Short code must contain only alphanumeric characters'),
+});
+
+// URL ID VALIDATOR
+export const urlIdSchema = z.object({
+  id: z. string().uuid('Invalid URL ID format'),
+});
+
 // Type exports
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateUrlInput = z.infer<typeof createUrlSchema>;
 export type PaginationInput = z.infer<typeof paginationSchema>;
+export type ShortCodeInput = z.infer<typeof shortCodeSchema>;
+export type UrlIdInput = z.infer<typeof urlIdSchema>;

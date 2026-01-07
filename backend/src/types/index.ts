@@ -3,7 +3,7 @@ import { Request } from 'express';
 // USER TYPES
 export interface User {
   id: string;
-  email:  string;
+  email: string;
   passwordHash: string;
   urlCount: number;
   createdAt: Date;
@@ -12,13 +12,13 @@ export interface User {
 
 export interface UserPublic {
   id: string;
-  email:  string;
+  email: string;
   urlCount: number;
-  createdAt:  Date;
+  createdAt: Date;
 }
 
 export interface CreateUserDto {
-  email:  string;
+  email: string;
   password: string;
 }
 
@@ -34,7 +34,7 @@ export interface Url {
   shortCode: string;
   originalUrl: string;
   clickCount: number;
-  isActive:  boolean;
+  isActive: boolean;
   expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -45,12 +45,47 @@ export interface CreateUrlDto {
 }
 
 export interface UrlResponse {
-  id:  string;
+  id: string;
   shortCode: string;
   shortUrl: string;
   originalUrl: string;
-  clickCount:  number;
+  clickCount: number;
+  isActive: boolean;
   createdAt: Date;
+}
+
+export interface UrlListResponse {
+  urls: UrlResponse[];
+  pagination: PaginationMeta;
+  meta: {
+    urlCount: number;
+    urlLimit: number;
+    remainingUrls: number;
+  };
+}
+
+// CACHE TYPES
+export interface CachedUrl {
+  originalUrl: string;
+  urlId: string;
+  isActive: boolean;
+}
+
+// CLICK TYPES
+export interface ClickData {
+  urlId: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  referer: string | null;
+  deviceType: string;
+  timestamp: number;
+}
+
+// SHORT CODE POOL TYPES
+export interface ShortCodePoolStats {
+  total: number;
+  used: number;
+  available: number;
 }
 
 // AUTH TYPES
@@ -60,7 +95,7 @@ export interface JwtPayload {
 }
 
 export interface AuthRequest extends Request {
-  user?:  JwtPayload;
+  user?: JwtPayload;
 }
 
 // API RESPONSE TYPES
@@ -72,26 +107,39 @@ export interface ApiResponse<T = unknown> {
     message: string;
     details?: unknown;
   };
-  meta?: {
-    page?:  number;
-    limit?: number;
-    total?: number;
-    totalPages?: number;
-  };
+  meta?: Record<string, unknown>;
 }
 
 // PAGINATION TYPES
 export interface PaginationParams {
-  page:  number;
+  page: number;
   limit: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface PaginatedResult<T> {
   data: T[];
-  pagination: {
-    page: number;
-    limit:  number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: PaginationMeta;
+}
+
+// RATE LIMIT TYPES
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+}
+
+// METRICS TYPES
+export interface MetricsData {
+  httpRequestsTotal: number;
+  urlsCreated: number;
+  redirectsServed: number;
+  cacheHits: number;
+  cacheMisses: number;
 }
