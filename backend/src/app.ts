@@ -128,28 +128,12 @@ async function startServer(): Promise<void> {
     // Start server
     app.listen(env. PORT, () => {
       console.log(`
-╔═══════════════════════════════════════════════════════════════╗
-║                                                               ║
-║   🚀 URL Shortener API Server                                 ║
-║                                                               ║
+
 ║   Environment: ${env.NODE_ENV. padEnd(44)}║
 ║   Port:  ${env.PORT. toString().padEnd(51)}║
 ║   URL:  http://localhost:${env.PORT. toString().padEnd(39)}║
 ║   Metrics: http://localhost:${env.PORT.toString()}/metrics${' '.repeat(26)}║
-║                                                               ║
-║   Endpoints:                                                  ║
-║   ├── POST   /api/auth/register                               ║
-║   ├── POST   /api/auth/login                                  ║
-║   ├── POST   /api/auth/logout                                 ║
-║   ├── GET    /api/auth/me                                     ║
-║   ├── POST   /api/urls                                        ║
-║   ├── GET    /api/urls                                        ║
-║   ├── GET    /api/urls/: id                                    ║
-║   ├── DELETE /api/urls/: id                                    ║
-║   ├── GET    /api/preview/: shortCode                          ║
-║   └── GET    /:shortCode (redirect)                           ║
-║                                                               ║
-╚═══════════════════════════════════════════════════════════════╝
+
       `);
     });
   } catch (error) {
